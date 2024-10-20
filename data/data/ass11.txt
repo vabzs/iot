@@ -1,0 +1,54 @@
+// Pin Definitions
+const int knockSensorPin = A0; // Pin connected to the piezo sensor
+const int buzzerPin = 9;       // Pin connected to the piezo buzzer
+
+int sensorValue = 0;           // Variable to store the knock sensor reading
+int threshold = 100;           // Threshold for detecting a knock
+
+// Notes for the tune (C4 to G4)
+int melody[] = {
+  262, 294, 330, 349, 392, 440, 494, 523
+};
+
+// Durations (in ms) corresponding to each note in the melody array
+int noteDurations[] = {
+  500, 500, 500, 500, 500, 500, 500, 500
+};
+
+void setup() {
+  pinMode(knockSensorPin, INPUT);
+  pinMode(buzzerPin, OUTPUT);
+  Serial.begin(9600); // Initialize serial communication for debugging
+}
+
+void loop() {
+  // Read the value from the piezo sensor
+  sensorValue = analogRead(knockSensorPin);
+  
+  // Print the sensor value to the Serial Monitor (for debugging)
+  Serial.println(sensorValue);
+
+  // If the sensor value exceeds the threshold, a knock is detected
+  if (sensorValue > threshold) {
+    Serial.println("Knock detected!");
+    playTune();
+    
+    // Small delay to prevent multiple knocks being detected from a single tap
+    delay(1000);
+  }
+}
+
+// Function to play a simple tune using the piezo buzzer
+void playTune() {
+  for (int i = 0; i < 8; i++) {
+    int noteDuration = noteDurations[i];
+    tone(buzzerPin, melody[i], noteDuration);
+    
+    // Pause for the duration of the note
+    delay(noteDuration);
+    
+    // Brief pause between notes
+    noTone(buzzerPin);
+    delay(100);
+  }
+}
